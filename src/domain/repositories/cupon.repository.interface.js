@@ -1,6 +1,6 @@
-class OrderRepository {
+class CuponRepository {
     constructor() {
-        if (this.constructor === OrderRepository) {
+        if (this.constructor === CuponRepository) {
             throw new Error("Cannot instantiate abstract class");
         }
     }
@@ -26,4 +26,4 @@ class OrderRepository {
     }
 }
 
-module.exports = OrderRepository;
+module.exports = CuponRepository;

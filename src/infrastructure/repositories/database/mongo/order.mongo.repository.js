@@ -1,85 +1,48 @@
-const OrderRepository = require('../../../../domain/repositories/order.repository.interface')
+const OrderRepository = require('../../../../domain/repositories/order.repository.interface');
 const OrderModel = require('./models/order.model');
 const Order = require('../../../../domain/entities/order.entity');
 
 class OrderMongoRepository extends OrderRepository {
     async getAll() {
-        const orders = await OrderModel.find().sort({ orderDate: -1 });
-        return orders.map(order => this._toEntity(order));
+        const orders = await OrderModel.find();
+        return orders.map(p => new Order(p._id.toString(), p.orderNumber, p.userId, p.creationDate, p.updateDate, p.status, p.totalAmount));
     }
 
     async getById(id) {
         const order = await OrderModel.findById(id);
         if (!order) return null;
-        return this._toEntity(order);
+        return new Order(order._id.toString(), order.orderNumber, order.userId, order.creationDate, order.updateDate, order.status, order.totalAmount);
     }
 
     async create(orderEntity) {
         const newOrder = new OrderModel({
-            product: orderEntity.product,
-            description: orderEntity.description,
-            quantity: orderEntity.quantity,
-            price: orderEntity.price,
-            discount: orderEntity.discount,
-            total: orderEntity.total,
+            orderNumber: orderEntity.orderNumber,
+            userId: orderEntity.userId,
+            creationDate: orderEntity.creationDate,
+            updateDate: orderEntity.updateDate,
             status: orderEntity.status,
-            orderDate: orderEntity.orderDate,
-            customerName: orderEntity.customerName,
-            customerEmail: orderEntity.customerEmail
+            totalAmount: orderEntity.totalAmount
         });
-        
         const savedOrder = await newOrder.save();
-        return this._toEntity(savedOrder);
+        return new Order(savedOrder._id.toString(), savedOrder.orderNumber, savedOrder.userId, savedOrder.creationDate, savedOrder.updateDate, savedOrder.status, savedOrder.totalAmount);
     }
 
     async update(id, orderEntity) {
         const updatedOrder = await OrderModel.findByIdAndUpdate(id, {
-            product: orderEntity.product,
-            description: orderEntity.description,
-            quantity: orderEntity.quantity,
-            price: orderEntity.price,
-            discount: orderEntity.discount,
+            orderNumber: orderEntity.orderNumber,
+            userId: orderEntity.userId,
+            creationDate: orderEntity.creationDate,
+            updateDate: orderEntity.updateDate,
             status: orderEntity.status,
-            customerName: orderEntity.customerName,
-            customerEmail: orderEntity.customerEmail
+            totalAmount: orderEntity.totalAmount
         }, { new: true });
 
         if (!updatedOrder) return null;
-        return this._toEntity(updatedOrder);
+        return new Order(updatedOrder._id.toString(), updatedOrder.orderNumber, updatedOrder.userId, updatedOrder.creationDate, updatedOrder.updateDate, updatedOrder.status, updatedOrder.totalAmount);
     }
 
     async delete(id) {
         await OrderModel.findByIdAndDelete(id);
-    }
-
-    async getByStatus(status) {
-        const orders = await OrderModel.find({ status }).sort({ orderDate: -1 });
-        return orders.map(order => this._toEntity(order));
-    }
-
-    async updateStatus(id, status) {
-        const updatedOrder = await OrderModel.findByIdAndUpdate(
-            id, 
-            { status }, 
-            { new: true }
-        );
-        
-        if (!updatedOrder) return null;
-        return this._toEntity(updatedOrder);
-    }
-
-    _toEntity(orderDoc) {
-        return new Order(
-            orderDoc._id.toString(),
-            orderDoc.product,
-            orderDoc.description,
-            orderDoc.quantity,
-            orderDoc.price,
-            orderDoc.discount,
-            orderDoc.total,
-            orderDoc.status,
-            orderDoc.orderDate
-        );
     }
 }
 

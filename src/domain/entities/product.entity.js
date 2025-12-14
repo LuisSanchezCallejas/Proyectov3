@@ -7,6 +7,8 @@ class Product {
         this.stock = stock;
         this.category = category;
         this.imageUrl = imageUrl;
+        //AQUI SE AGREGA EL CAMPO DEL EJERCICIO 1
+        this.brand = brand; //nuevo campo "marca" agregado
     }
 }
 

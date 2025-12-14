@@ -1,40 +1,40 @@
 const { Router } = require('express');
-const OrderController = require('../controller/order.controller');
+const CuponController = require('../controller/cupon.controller');
 const authenticateToken = require('../middlewares/auth.middleware');
 const isAdmin = require('../middlewares/admin.middleware');
 const asyncHandler = require('../utils/async.handler');
 
 // Esta es la "Inyección de Dependencias" manual
-const OrderService = require('../../application/use-cases/order.service');
+const ProductService = require('../../application/use-cases/cupon.service');
 
 const OrderMongoRepository = require('../../infrastructure/repositories/database/mongo/order.mongo.repository');
-const orderRepository = new OrderMongoRepository();
+const orederRepository = new OrderMongoRepository();
 
-const orderService = new OrderService(orderRepository);
-const orderController = new OrderController(orderService);
+const orderService = new ProductService(orederRepository);
+const cuponController = new CuponController(orderService);
 
 const router = Router();
 /**
  * @swagger
- * /orders:
+ * /cupon:
  *   get:
- *     summary: Retrieve a list of orders
+ *     summary: Retrieve a list of cupons
  *     responses:
  *       200:
- *         description: A list of ordes.
+ *         description: A list of cupons.
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Order'
+ *                 $ref: '#/components/schemas/Cupon'
  */
-router.get('/', asyncHandler(orderController.getAll));
+router.get('/', asyncHandler(cuponController.getAll));
 /**
  * @swagger
- * /order/{id}:
+ * /cupon/{id}:
  *   get:
- *     summary: Retrieve a single order by ID
+ *     summary: Retrieve a cupon user by ID
  *     parameters:
  *       - in: path
  *         name: id
@@ -43,44 +43,44 @@ router.get('/', asyncHandler(orderController.getAll));
  *           type: string
  *     responses:
  *       200:
- *         description: A single order.
+ *         description: A single cupon.
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Order'
+ *               $ref: '#/components/schemas/Cupon'
  *       404:
  *         description: User not found
  */
-router.get('/:id', asyncHandler(orderController.getById));
+router.get('/:id', asyncHandler(cuponController.getById));
 /**
  * @swagger
- * /order:
+ * /cupon:
  *   post:
- *     summary: Create a new Order
+ *     summary: Create a new Cupon
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/OrderInput'
+ *             $ref: '#/components/schemas/CuponInput'
  *     responses:
  *       201:
- *         description: The created Order.
+ *         description: The created Cupon.
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Order'
+ *               $ref: '#/components/schemas/Cupon'
  *       400:
  *         description: Bad request
  *       409:
- *         description: Order with this email already exists
+ *         description: User with this email already exists
  */
-router.post('/', [authenticateToken, isAdmin], asyncHandler(orderController.create));
+router.post('/', [authenticateToken, isAdmin], asyncHandler(cuponController.create));
 /**
  * @swagger
- * /order/{id}:
+ * /cupon/{id}:
  *   put:
- *     summary: Update a order
+ *     summary: Update a cupon
  *     parameters:
  *       - in: path
  *         name: id
@@ -92,23 +92,23 @@ router.post('/', [authenticateToken, isAdmin], asyncHandler(orderController.crea
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/OrderInput'
+ *             $ref: '#/components/schemas/CuponInput'
  *     responses:
  *       200:
  *         description: The updated user.
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Order'
+ *               $ref: '#/components/schemas/Cupon'
  *       404:
  *         description: User not found
  */
-router.put('/:id', [authenticateToken, isAdmin], asyncHandler(orderController.update));
+router.put('/:id', [authenticateToken, isAdmin], asyncHandler(cuponController.update));
 /**
  * @swagger
- * /order/{id}:
+ * /cupon/{id}:
  *   delete:
- *     summary: Delete a Order
+ *     summary: Delete a Cupon
  *     parameters:
  *       - in: path
  *         name: id
@@ -119,8 +119,8 @@ router.put('/:id', [authenticateToken, isAdmin], asyncHandler(orderController.up
  *       204:
  *         description: No content
  *       404:
- *         description: Order not found
+ *         description: Cupon not found
  */
-router.delete('/:id', [authenticateToken, isAdmin], asyncHandler(orderController.delete));
+router.delete('/:id', [authenticateToken, isAdmin], asyncHandler(cuponController.delete));
 
 module.exports = router;
